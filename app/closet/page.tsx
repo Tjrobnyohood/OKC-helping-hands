@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { supabase } from '../utils/supabase';
 import { Shirt, Calendar, Clock, ArrowLeft, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+// Import our new impact components
+import DonationRegistry from '@/app/closet/DonationRegistry';
+import NeighborhoodIndex from '@/app/components/NeighborhoodIndex';
 
 export default function DignityCloset() {
   const [name, setName] = useState('');
@@ -16,6 +19,7 @@ export default function DignityCloset() {
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // NOTE: Ensure your Supabase table column name is 'neighbor_name' or 'visitor_name'
     const { error } = await supabase
       .from('closet_appointments')
       .insert([{ neighbor_name: name, appointment_date: date, time_slot: slot }]);
@@ -48,7 +52,7 @@ export default function DignityCloset() {
         <ArrowLeft size={20} /> Back to Hub
       </Link>
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <div className="p-4 bg-orange-500 rounded-2xl">
             <Shirt className="text-[#001E41]" size={32} />
@@ -58,57 +62,71 @@ export default function DignityCloset() {
           </h1>
         </div>
 
-        <form onSubmit={handleBooking} className="space-y-6 bg-white/5 p-8 rounded-[2rem] border border-white/10">
-          <div>
-            <label className="block text-xs font-black uppercase tracking-widest text-blue-300 mb-2">Neighbor Name</label>
-            <input 
-              required
-              className="w-full bg-[#002D62] border border-white/10 rounded-xl p-4 focus:border-orange-500 outline-none transition-all"
-              placeholder="Your full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* LEFT COLUMN: The Booking Form */}
+          <form onSubmit={handleBooking} className="space-y-6 bg-white/5 p-8 rounded-[2rem] border border-white/10 h-fit">
+            <h3 className="text-xl font-bold italic uppercase text-blue-400">Book a Visit</h3>
             <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-blue-300 mb-2 flex items-center gap-2">
-                <Calendar size={14} /> Preferred Date
-              </label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-blue-300 mb-2">Neighbor Name</label>
               <input 
                 required
-                type="date"
-                className="w-full bg-[#002D62] border border-white/10 rounded-xl p-4 focus:border-orange-500 outline-none transition-all text-white"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+                className="w-full bg-[#002D62] border border-white/10 rounded-xl p-4 focus:border-orange-500 outline-none transition-all"
+                placeholder="Your full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-blue-300 mb-2 flex items-center gap-2">
-                <Clock size={14} /> Time Slot
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {timeSlots.map((time) => (
-                  <button
-                    key={time}
-                    type="button"
-                    onClick={() => setSlot(time)}
-                    className={`p-3 rounded-xl text-xs font-bold transition-all border ${
-                      slot === time ? 'bg-orange-500 border-orange-500 text-[#001E41]' : 'bg-white/5 border-white/10 text-white'
-                    }`}
-                  >
-                    {time}
-                  </button>
-                ))}
+            <div className="grid grid-cols-1 gap-6">
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-blue-300 mb-2 flex items-center gap-2">
+                  <Calendar size={14} /> Date
+                </label>
+                <input 
+                  required
+                  type="date"
+                  className="w-full bg-[#002D62] border border-white/10 rounded-xl p-4 focus:border-orange-500 outline-none transition-all text-white"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-blue-300 mb-2 flex items-center gap-2">
+                  <Clock size={14} /> Time
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {timeSlots.map((time) => (
+                    <button
+                      key={time}
+                      type="button"
+                      onClick={() => setSlot(time)}
+                      className={`p-3 rounded-xl text-[10px] font-bold transition-all border ${
+                        slot === time ? 'bg-orange-500 border-orange-500 text-[#001E41]' : 'bg-white/5 border-white/10 text-white'
+                      }`}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          <button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-[#001E41] py-5 rounded-2xl font-black uppercase italic tracking-tighter shadow-xl shadow-orange-500/20 transition-all">
-            Request Appointment
-          </button>
-        </form>
+            <button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-[#001E41] py-5 rounded-2xl font-black uppercase italic tracking-tighter shadow-xl shadow-orange-500/20 transition-all">
+              Request Appointment
+            </button>
+          </form>
+
+          {/* RIGHT COLUMN: Live Stock Levels */}
+          <div className="space-y-6">
+            <DonationRegistry />
+          </div>
+        </div>
+
+        {/* BOTTOM SECTION: The Neighborhood Heatmap */}
+        <div className="mt-16 border-t border-white/10 pt-16">
+          <NeighborhoodIndex />
+        </div>
       </div>
     </div>
   );

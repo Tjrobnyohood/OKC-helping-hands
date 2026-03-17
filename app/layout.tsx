@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 // 1. Standard Metadata API (For Browser Tabs & Google Search Snippets)
 export const metadata: Metadata = {
-  title: "Rise City Hub | Empowering Recovery & Reintegration",
+  title: "OKC Helping Hands | Empowering Recovery & Reintegration",
   description: "Free community closet, electronics charging, and recovery meetings. Building dignity and autonomy for our neighbors.",
   keywords: ["homeless resources", "community closet", "phone charging", "rehabilitation", "recovery meetings"],
 };
@@ -21,9 +21,9 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NonprofitOrganization",
-    "name": "Rise City Hub",
-    "url": "https://your-rise-city-domain.com",
-    "logo": "https://your-rise-city-domain.com/logo.png",
+    "name": "OKC Helping Hands",
+    "url": "okc-helping-hands.com",
+    "logo": "https://okc-helping-hands.com/logo.png",
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+1-555-THUNDER",
