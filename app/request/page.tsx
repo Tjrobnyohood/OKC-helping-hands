@@ -1,106 +1,122 @@
-"use client";
-import { useState } from 'react';
-import { supabase } from '@/app/utils/supabase';
-import { Send, MapPin, Users, Package, Heart } from 'lucide-react';
+'use client';
+import React, { useState } from 'react';
+import { supabase } from '../utils/supabase';
+import { Send, ArrowLeft, MessageSquare, User, HelpCircle } from 'lucide-react';
+import Link from 'next/link';
 
 export default function RequestPage() {
+  const [formData, setFormData] = useState({ name: '', type: 'General', message: '' });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ 
-    requester_name: '', 
-    item_needed: '', 
-    family_size: 1,
-    neighborhood: '', 
-    quantity_needed: 1 
-  });
 
-  const sendRequest = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Matches your Supabase screenshot + our new columns
-    const { error } = await supabase.from('community_needs').insert([{
-      requester_name: form.requester_name,
-      family_size: form.family_size,
-      item_needed: form.item_needed,
-      neighborhood: form.neighborhood,
-      quantity_needed: form.quantity_needed,
-      status: 'pending'
-    }]);
+    const { error } = await supabase.from('requests').insert([
+      { 
+        full_name: formData.name, 
+        request_type: formData.type, 
+        message: formData.message 
+      }
+    ]);
 
-    if (!error) {
-      setSubmitted(true);
+    if (error) {
+      alert("Error sending request. Please try again.");
     } else {
-      console.error(error);
-      alert("Error saving to database. Check console.");
+      setSubmitted(true);
     }
     setLoading(false);
   };
 
   if (submitted) {
     return (
-      <main className="min-h-screen bg-[#001E41] flex items-center justify-center p-6">
-        <div className="bg-white/5 border border-orange-500 p-12 rounded-[3rem] text-center max-w-md backdrop-blur-xl">
-          <Heart className="text-orange-500 w-16 h-16 mx-auto mb-6 fill-orange-500/20" />
-          <h2 className="text-3xl font-black italic uppercase text-white tracking-tighter">Request Logged</h2>
-          <p className="text-blue-200 mt-4 mb-8 italic text-sm">Help is on the way. We have notified our field ops team.</p>
-          <button onClick={() => setSubmitted(false)} className="bg-orange-500 text-[#001E41] px-8 py-3 rounded-xl font-bold uppercase text-xs">New Request</button>
+      <main className="max-w-4xl mx-auto p-6 min-h-screen bg-[#001E41] flex flex-col items-center justify-center text-center space-y-6">
+        <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center border border-green-500/50">
+          <Send className="text-green-500 w-10 h-10" />
         </div>
+        <h1 className="text-3xl font-black italic uppercase text-white">Request <span className="text-orange-500">Sent</span></h1>
+        <p className="text-blue-200/60 max-w-xs">OKC Helping Hands staff will review your request and get back to you soon.</p>
+        <Link href="/" className="bg-white/10 px-8 py-3 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-white/20 transition-all">Return Home</Link>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#001E41] text-white p-6">
-      <div className="max-w-2xl mx-auto pt-10">
-        <h1 className="text-4xl font-black italic uppercase tracking-tighter mb-8">
-          OKC <span className="text-orange-500">Intake</span>
+    <main className="max-w-4xl mx-auto p-6 space-y-8 min-h-screen bg-[#001E41] pb-24 text-white">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Link href="/" className="p-2 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+          <ArrowLeft className="text-blue-400" />
+        </Link>
+        <h1 className="text-2xl font-black italic uppercase text-white">
+          Help <span className="text-orange-500">Request</span>
         </h1>
-
-        <form onSubmit={sendRequest} className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] space-y-6">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-orange-500 tracking-widest">Requester Name</label>
-            <input required className="w-full bg-[#002a5a] border border-white/10 p-4 rounded-2xl outline-none focus:border-orange-500" 
-              value={form.requester_name} onChange={e => setForm({...form, requester_name: e.target.value})} />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-orange-500 tracking-widest flex items-center gap-1">
-                <MapPin size={12}/> Neighborhood
-              </label>
-              <input required className="w-full bg-[#002a5a] border border-white/10 p-4 rounded-2xl outline-none focus:border-orange-500" 
-                placeholder="e.g. Capitol Hill"
-                value={form.neighborhood} onChange={e => setForm({...form, neighborhood: e.target.value})} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-orange-500 tracking-widest flex items-center gap-1">
-                <Users size={12}/> Family Size
-              </label>
-              <input type="number" className="w-full bg-[#002a5a] border border-white/10 p-4 rounded-2xl outline-none" 
-                value={form.family_size} onChange={e => setForm({...form, family_size: parseInt(e.target.value)})} />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-orange-500 tracking-widest">Item(s) Needed</label>
-              <input required className="w-full bg-[#002a5a] border border-white/10 p-4 rounded-2xl outline-none" 
-                placeholder="Size 10 Shoes, Tarp, etc"
-                value={form.item_needed} onChange={e => setForm({...form, item_needed: e.target.value})} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-orange-500 tracking-widest">Quantity</label>
-              <input type="number" className="w-full bg-[#002a5a] border border-white/10 p-4 rounded-2xl outline-none" 
-                value={form.quantity_needed} onChange={e => setForm({...form, quantity_needed: parseInt(e.target.value)})} />
-            </div>
-          </div>
-
-          <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-orange-600 py-5 rounded-2xl font-black uppercase italic tracking-tighter flex items-center justify-center gap-3 transition-all">
-            {loading ? "Syncing..." : <><Send size={18}/> Submit to Field Ops</>}
-          </button>
-        </form>
       </div>
+
+      <div className="bg-orange-500/10 border border-orange-500/20 p-6 rounded-[2.5rem]">
+        <p className="text-sm font-medium italic text-orange-100">"How can we support you today? Please let us know what you need."</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Name Input */}
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 ml-2">Your Name</label>
+          <div className="relative">
+            <User className="absolute left-4 top-4 text-blue-400 w-5 h-5" />
+            <input 
+              required
+              className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-orange-500 transition-all"
+              placeholder="Full Name"
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+            />
+          </div>
+        </div>
+
+        {/* Request Type */}
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 ml-2">Type of Help</label>
+          <div className="relative">
+            <HelpCircle className="absolute left-4 top-4 text-blue-400 w-5 h-5" />
+            <select 
+              className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-orange-500 transition-all appearance-none"
+              onChange={(e) => setFormData({...formData, type: e.target.value})}
+            >
+              <option className="bg-[#002D62]">General Help</option>
+              <option className="bg-[#002D62]">Clothing / Gear</option>
+              <option className="bg-[#002D62]">Food / Water</option>
+              <option className="bg-[#002D62]">Transportation</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Message */}
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 ml-2">Details</label>
+          <div className="relative">
+            <MessageSquare className="absolute left-4 top-4 text-blue-400 w-5 h-5" />
+            <textarea 
+              required
+              rows={4}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-orange-500 transition-all"
+              placeholder="Tell us more about how we can help..."
+              onChange={(e) => setFormData({...formData, message: e.target.value})}
+            />
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          disabled={loading}
+          className="w-full bg-orange-500 hover:bg-orange-600 text-[#001E41] font-black uppercase py-5 rounded-[2rem] transition-all active:scale-95 shadow-[0_0_20px_rgba(249,115,22,0.3)] flex items-center justify-center gap-3 disabled:opacity-50"
+        >
+          {loading ? 'Sending...' : (
+            <>
+              Send Request <Send size={18} />
+            </>
+          )}
+        </button>
+      </form>
     </main>
   );
 }
