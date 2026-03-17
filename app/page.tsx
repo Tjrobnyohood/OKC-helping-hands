@@ -1,41 +1,25 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Zap, Shirt, Users, MapPin, BatteryCharging, ChevronRight, UserCircle2, MessageCircle, Send } from 'lucide-react';
+import { 
+  BatteryCharging, MapPin, Users, Shirt, Zap, 
+  MessageCircle, Send, UserCircle2, ChevronRight 
+} from 'lucide-react';
 import Link from 'next/link';
 
-// --- 1. SCRIPTURE DATA ---
+// --- DATA ---
 const verses = [
-  "Hebrews 13:16 - Do not forget to do good and to share with others.",
-  "Proverbs 3:27 - Do not withhold good from those to whom it is due.",
-  "Matthew 5:16 - Let your light shine before others.",
-  "Galatians 6:2 - Carry each other’s burdens.",
-  "1 John 3:18 - Let us not love with words but with actions.",
-  "Psalm 121:1 - I lift up my eyes to the mountains—where does my help come from?"
+  "Wait on the LORD: be of good courage, and he shall strengthen thine heart.",
+  "The LORD is my shepherd; I shall not want.",
+  "God is our refuge and strength, a very present help in trouble.",
+  "Trust in the LORD with all thine heart; and lean not unto thine own understanding.",
+  "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil."
 ];
-
-// --- 2. THE CARD COMPONENT ---
-interface ActionCardProps {
-  icon: React.ReactNode;
-  label: string;
-  color: 'blue' | 'orange';
-  href: string;
-}
-
-const ActionCard = ({ icon, label, color, href }: ActionCardProps) => (
-  <Link href={href} className="flex flex-col items-center justify-center gap-3 p-6 rounded-3xl border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 group shadow-lg backdrop-blur-sm relative z-20">
-    <div className={`${color === 'orange' ? 'text-orange-500' : 'text-blue-400'} group-hover:scale-110 transition-all`}>
-      {icon}
-    </div>
-    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-white/90">{label}</span>
-  </Link>
-);
 
 export default function Dashboard() {
   const [verseIndex, setVerseIndex] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
   const [fade, setFade] = useState(false);
 
-  // Safety: Handle the "Floating Verses" only after the page loads in the browser
   useEffect(() => {
     setIsMounted(true);
     setFade(true);
@@ -46,97 +30,118 @@ export default function Dashboard() {
         setVerseIndex((prev) => (prev + 1) % verses.length);
         setFade(true);
       }, 1500);
-    }, 9000);
+    }, 8000);
 
     return () => clearInterval(timer);
   }, []);
 
-  // Prevent Vercel "Hydration" errors
   if (!isMounted) return <div className="min-h-screen bg-[#001E41]" />;
 
   return (
-    <main className="relative max-w-4xl mx-auto p-6 space-y-8 min-h-screen overflow-hidden bg-[#001E41]">
+    <main className="relative min-h-screen bg-[#001E41] overflow-x-hidden font-sans pb-20">
       
-      {/* --- BACKGROUND LAYERS --- */}
-      <div className="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] bg-orange-500/10 blur-[120px] rounded-full pointer-events-none z-0" />
-      <div className="fixed bottom-[10%] left-[-10%] w-[400px] h-[400px] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none z-0" />
-      
-      <div className="fixed inset-0 z-[-1] opacity-[0.03] pointer-events-none" 
-           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
+      {/* 1. BACKGROUND GLOWS (Z-0) */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-5%] right-[-5%] w-[500px] h-[500px] bg-orange-500/10 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[20%] left-[-10%] w-[350px] h-[350px] bg-blue-500/10 blur-[100px] rounded-full" />
       </div>
 
-      {/* --- FLOATING SCRIPTURE LAYER (Bottom Positioned) --- */}
-        <div className={`fixed inset-x-0 bottom-0 h-1/3 flex items-end justify-center pointer-events-none transition-all duration-[3000ms] z-20 ${fade ? 'opacity-40 translate-y-[-80px]' : 'opacity-0 translate-y-[-40px]'}`}>
-          <p className="text-blue-300 italic font-black text-center px-10 text-[11px] sm:text-sm tracking-[0.3em] uppercase max-w-xl leading-relaxed drop-shadow-md">
-            {verses[verseIndex]}
-          </p>
-        </div>
-
-      {/* --- CONTENT HEADER --- */}
-      <header className="relative z-30 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-orange-500 rounded-2xl flex items-center justify-center font-black text-[#001E41] italic shadow-[0_0_15px_rgba(249,115,22,0.4)]">⚡</div>
-          <div>
-            <h1 className="text-2xl font-black tracking-tighter uppercase italic text-white leading-none">
-              OKC <span className="text-orange-500">Helping Hands</span>
-            </h1>
-            <p className="text-[10px] tracking-[0.3em] uppercase font-bold text-blue-400 mt-1">Community Hub</p>
-          </div>
-        </div>
-
-        <Link href="/login" className="flex items-center gap-3 group">
-           <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-blue-400 via-blue-600 to-orange-500 p-[2px] shadow-xl transition-transform group-active:scale-90">
-              <div className="h-full w-full bg-[#001E41] rounded-[14px] flex items-center justify-center text-white">
-                <UserCircle2 size={24} className="group-hover:text-orange-500 transition-colors" />
-              </div>
-           </div>
-        </Link>
-      </header>
-
-      {/* --- HERO STATUS --- */}
-      <section className="relative z-30 overflow-hidden bg-gradient-to-br from-orange-600 via-[#EF4234] to-blue-900 rounded-[2.5rem] p-8 shadow-2xl border border-white/10">
-        <div className="relative z-10 flex justify-between items-center">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 mb-2">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-white">Locker Status</span>
+      {/* 2. MAIN CONTENT WRAPPER (Z-20) */}
+      <div className="relative z-20 max-w-4xl mx-auto p-6 space-y-10">
+        
+        {/* HEADER */}
+        <header className="flex justify-between items-center py-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-orange-500 rounded-2xl flex items-center justify-center font-black text-[#001E41] italic shadow-[0_0_15px_rgba(249,115,22,0.4)]">⚡</div>
+            <div>
+              <h1 className="text-2xl font-black tracking-tighter uppercase italic text-white leading-none">
+                OKC <span className="text-orange-500">Helping Hands</span>
+              </h1>
+              <p className="text-[9px] tracking-[0.4em] uppercase font-bold text-blue-400 mt-1">Community Hub</p>
             </div>
-            <h2 className="text-4xl font-black italic uppercase tracking-tighter text-white leading-tight">Station <span className="text-blue-900/40">Online</span></h2>
-            <p className="text-orange-100 font-medium opacity-90 text-sm">Power Station 4 is Available in OKC</p>
           </div>
-          <BatteryCharging className="w-12 h-12 text-white/50 animate-pulse" />
-        </div>
-      </section>
+          <Link href="/login" className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:border-orange-500 hover:bg-white/10 transition-all">
+            <UserCircle2 size={24} />
+          </Link>
+        </header>
 
-      {/* --- ACTION GRID --- */}
-      <section className="relative z-30 space-y-4">
-        <h3 className="text-blue-300 uppercase text-[11px] font-black tracking-[0.25em] ml-2 flex items-center gap-2">
-          <span className="w-8 h-[1px] bg-blue-400/30" />
-          Hub Services
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <ActionCard icon={<MapPin size={26}/>} label="Index" color="blue" href="/resources" />
-          <ActionCard icon={<Users size={26}/>} label="Meetings" color="orange" href="/meetings" />
-          <ActionCard icon={<Shirt size={26}/>} label="Closet" color="blue" href="/closet" />
-          <ActionCard icon={<Zap size={26}/>} label="Power" color="orange" href="/power" />
-          <ActionCard icon={<MessageCircle size={26}/>} label="Impact" color="blue" href="/community" />
-          <ActionCard icon={<Send size={26}/>} label="Request" color="orange" href="/request" />
-        </div>
-      </section>
+        {/* HERO: LOCKER STATUS */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-orange-600 to-blue-900 rounded-[2.5rem] p-10 border border-white/10 shadow-2xl">
+           <div className="relative z-10 flex justify-between items-center">
+             <div className="space-y-2">
+               <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 mb-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                  <span className="text-[9px] font-black uppercase text-white tracking-widest">Locker Status</span>
+               </div>
+               <h2 className="text-5xl font-black italic uppercase tracking-tighter text-white leading-none">Station <span className="opacity-40">Online</span></h2>
+               <p className="text-orange-100 font-bold text-xs opacity-70">Power Station 4 is Available in OKC</p>
+             </div>
+             <BatteryCharging className="w-16 h-16 text-white/30" />
+           </div>
+           <div className="absolute top-0 right-0 w-32 h-full bg-white/5 skew-x-[-20deg] translate-x-12" />
+        </section>
 
-      {/* --- BULLETIN --- */}
-      <section className="relative z-30 bg-white/5 border border-white/10 rounded-[2.5rem] p-6 backdrop-blur-sm">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="font-black text-white uppercase tracking-wider italic">OKC Bulletin</h3>
+        {/* HUB SERVICES GRID */}
+        <div className="space-y-4">
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400 ml-4">Hub Services</p>
+          <section className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <ActionCard icon={<MapPin size={26}/>} label="Index" color="blue" href="/resources" />
+            <ActionCard icon={<Users size={26}/>} label="Meetings" color="orange" href="/meetings" />
+            <ActionCard icon={<Shirt size={26}/>} label="Closet" color="blue" href="/closet" />
+            <ActionCard icon={<Zap size={26}/>} label="Power" color="orange" href="/power" />
+            <ActionCard icon={<MessageCircle size={26}/>} label="Impact" color="blue" href="/community" />
+            <ActionCard icon={<Send size={26}/>} label="Request" color="orange" href="/request" />
+          </section>
         </div>
-        <div className="flex gap-4 items-start bg-white/5 p-4 rounded-2xl">
-          <Shirt className="text-orange-500 shrink-0" size={20} />
-          <p className="text-sm text-blue-100/70 leading-relaxed italic">
-            "New clothing inventory arrived. Check the closet for gear."
-          </p>
-        </div>
-      </section>
 
+        {/* --- 3. THE FLOATING SCRIPTURE (Z-10) --- */}
+        {/* Positioned as a dedicated section to occupy the blue space */}
+        <div className="w-full flex justify-center py-12 pointer-events-none min-h-[100px]">
+          <div className={`transition-all duration-[4000ms] ease-in-out ${fade ? 'opacity-40 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'}`}>
+             <p className="text-blue-300 italic font-black text-center px-12 text-[10px] sm:text-[11px] tracking-[0.5em] uppercase max-w-lg leading-loose drop-shadow-2xl">
+               "{verses[verseIndex]}"
+             </p>
+          </div>
+        </div>
+
+        {/* OKC BULLETIN */}
+        <section className="space-y-4">
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400 ml-4">OKC Bulletin</p>
+          <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-md flex items-center gap-6 group hover:border-orange-500/50 transition-all cursor-pointer">
+             <div className="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20 group-hover:bg-orange-500 transition-all">
+                <Shirt className="text-orange-500 group-hover:text-[#001E41]" size={28} />
+             </div>
+             <div className="flex-1">
+                <p className="text-blue-100/70 italic font-bold text-xs sm:text-sm leading-relaxed">
+                  "New clothing inventory arrived. Check the closet for gear."
+                </p>
+             </div>
+             <ChevronRight className="text-white/20 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
+          </div>
+        </section>
+
+      </div>
     </main>
+  );
+}
+
+// --- REUSABLE COMPONENT FOR THE GRID ---
+function ActionCard({ icon, label, color, href }: { icon: any, label: string, color: 'blue' | 'orange', href: string }) {
+  const isOrange = color === 'orange';
+  return (
+    <Link href={href} className={`
+      relative h-32 rounded-[2rem] p-6 flex flex-col justify-between overflow-hidden transition-all group active:scale-95
+      ${isOrange ? 'bg-orange-500 shadow-[0_10px_20px_rgba(249,115,22,0.2)]' : 'bg-white/5 border border-white/10 hover:border-blue-500/50'}
+    `}>
+      <div className={`${isOrange ? 'text-[#001E41]' : 'text-blue-400'} transition-transform group-hover:scale-110 duration-500`}>
+        {icon}
+      </div>
+      <span className={`text-[11px] font-black uppercase tracking-widest ${isOrange ? 'text-[#001E41]' : 'text-white'}`}>
+        {label}
+      </span>
+      {!isOrange && (
+        <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 blur-2xl rounded-full" />
+      )}
+    </Link>
   );
 }
