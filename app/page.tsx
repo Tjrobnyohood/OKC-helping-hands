@@ -65,12 +65,12 @@ export default function Dashboard() {
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
       </div>
 
-      {/* --- FLOATING SCRIPTURE --- */}
-      <div className={`fixed inset-0 flex items-center justify-center pointer-events-none transition-all duration-[2000ms] z-10 ${fade ? 'opacity-25 scale-105' : 'opacity-0 scale-100'}`}>
-        <p className="text-blue-200 italic font-medium text-center px-12 text-sm sm:text-base tracking-[0.25em] uppercase max-w-lg leading-loose font-serif">
-          {verses[verseIndex]}
-        </p>
-      </div>
+      {/* --- FLOATING SCRIPTURE LAYER (Bottom Positioned) --- */}
+        <div className={`fixed inset-x-0 bottom-0 h-1/3 flex items-end justify-center pointer-events-none transition-all duration-[3000ms] z-20 ${fade ? 'opacity-40 translate-y-[-80px]' : 'opacity-0 translate-y-[-40px]'}`}>
+          <p className="text-blue-300 italic font-black text-center px-10 text-[11px] sm:text-sm tracking-[0.3em] uppercase max-w-xl leading-relaxed drop-shadow-md">
+            {verses[verseIndex]}
+          </p>
+        </div>
 
       {/* --- CONTENT HEADER --- */}
       <header className="relative z-30 py-4 flex justify-between items-center">
