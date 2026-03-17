@@ -66,7 +66,7 @@ export default function DignityCloset() {
               className="w-full bg-[#002D62] border border-white/10 rounded-xl p-4 focus:border-orange-500 outline-none transition-all"
               placeholder="Your full name"
               value={name}
-              onChange={(e) => setName(e)}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
