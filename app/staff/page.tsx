@@ -6,7 +6,7 @@ import { Shirt, Users, Calendar as CalIcon, ArrowLeft, RefreshCw, Trash2 } from 
 import Link from 'next/link';
 
 export default function StaffAdmin() {
-  const [appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState<Array<{id: string; neighbor_name: string; appointment_date: string; time_slot: string}>>([]);
   const [loading, setLoading] = useState(true);
 
   // Function to pull appointments from the database

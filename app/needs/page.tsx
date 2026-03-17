@@ -1,29 +1,21 @@
 "use client";
-import { useEffect, useState } from 'react';
-import { supabase } from '@/app/utils/supabase'; // Use the shared connection
-import Header from '../components/Header';       // Fixes the import error
+import { useEffect, useState, useCallback } from 'react';
+import { supabase } from '@/app/utils/supabase';
+import Header from '@/app/components/header';
 
 export default function AdminNeeds() {
   const [needs, setNeeds] = useState<any[]>([]);
 
-  const fetchNeeds = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('community_needs')
-        .select('*')
-        .order('created_at', { ascending: false });
-        
-      if (error) throw error;
-      if (data) setNeeds(data);
-    } catch (err) {
-      console.error('Failed to fetch needs:', err);
-    }
-  };
-
-  useEffect(() => {
-    fetchNeeds();
+  // Wrap in useCallback to prevent the infinite loop warning
+  const fetchNeeds = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('community_needs')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (data) setNeeds(data);
   }, []);
 
+  // Use only ONE useEffect
   useEffect(() => {
     fetchNeeds();
   }, [fetchNeeds]);
